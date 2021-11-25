@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rask - Home Page - A Task Manager Tool</title>
+  </head>
+  <style>
+    /* html {
+      font-size: 25px;
+    } */
+    body {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      height: 100vh;
+      background: #ada996;
+      background: -webkit-linear-gradient(
+        -45deg,
+        #eaeaea,
+        #dbdbdb,
+        #f2f2f2,
+        #ada996
+      );
+      background: linear-gradient(-45deg, #eaeaea, #dbdbdb, #f2f2f2, #ada996);
+
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      -webkit-animation: gradient 10s ease infinite;
+    }
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    .flex-cont {
+      display: flex;
+      height: 100%;
+      color: #444;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      width: 70%;
+    }
+    .title {
+      font-size: 6rem;
+      font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    }
+    .title-info {
+      font-size: 2.8rem;
+      font-family: "Courier New", Courier, monospace;
+    }
+    .form-cont {
+      width: 100%;
+    }
+    input[type="text"] {
+      width: 50%;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: rgba(255, 255, 255, 0.6);
+      border: 1px solid #ccc;
+      height: 4rem;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+    input[type="text"]:hover {
+      border: 1px solid #719ece;
+    }
+    input[type="text"]:focus {
+      outline: none !important;
+      border: 2px solid #719ece;
+      box-shadow: 0 0 6px #719ece;
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+    .link-btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      text-decoration: none;
+      height: 4rem;
+      font-size: 1.2rem;
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 100;
+      margin-left: 4rem;
+      border-radius: 0.25rem;
+      width: 30%;
+      color: #444;
+      transition: 300ms;
+      box-sizing: border-box;
+    }
+    .link-btn:hover {
+      transform: scale(1.01);
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    .link-btn:focus {
+      outline: 1px solid #719ece;
+      box-shadow: 0 0 6px #719ece;
+    }
+    .attached-text {
+      font-size: 0.8rem;
+      width: 50%;
+      display: inline-block;
+      text-align: right;
+      color: #999;
+    }
+    .logo {
+      position: absolute;
+    }
+    .log-sign-nav-bar {
+      position: absolute;
+      right: 50px;
+      top: 50px;
+    }
+    .nav-item {
+      margin: 0 10px;
+      text-decoration: none;
+      font-size: 1.4rem;
+      font-family: "Courier New", Courier, monospace;
+      color: #444;
+    }
+    .nav-item:hover {
+      border-bottom: 1px solid #444;
+    }
+    @media only screen and (max-width: 760px) {
+      html {
+        font-size: 9px;
+      }
+      .flex-cont {
+        width: 90%;
+      }
+      .log-sign-nav-bar {
+        position: static;
+        text-align: right;
+      }
+    }
+  </style>
+  <body>
+    {% if current_user.is_authenticated: %} {% include "user_dashboard.html" %}
+    {% endif %}
+    <header>
+      {% if not current_user.is_authenticated: %}
+      <nav class="log-sign-nav-bar">
+        <a href="{{ url_for('login')}}" class="nav-item">Login</a> |
+        <a href="{{ url_for('signup')}}" class="nav-item">Signup</a>
+      </nav>
+      {% endif %}
+      <img
+        src="../static/images/rask_logo.png"
+        alt="rask-moder-logo"
+        class="logo"
+      />
+      <div class="flex-cont">
+        <div class="title-cont">
+          <h1 class="title">Simple Task Manager</h1>
+          <h3 class="title-info">
+            Manage your day, week and month, set up alerts, notifications and
+            much more!
+          </h3>
+        </div>
+        {% if not current_user.is_authenticated: %}
+        <div class="form-cont">
+          <form
+            action="{{url_for('task_lists', list_id=-1)}}"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <input
+              type="text"
+              name="listName"
+              id="name"
+              placeholder="Give your first list a great name.."
+            />
+            <input type="submit" value="GET STARTED" class="link-btn" />
+          </form>
+          <small class="attached-text">Need Inspiration? Me too!</small>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+html {
+  font-size: 25px;
+}
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.flex-cont {
+  display: flex;
+  height: 100vh;
+}
+.left-box {
+  background: url("../images/sign_up_side_header_img-2.jpg") no-repeat;
+  background-position: 10%;
+  background-size: cover;
+  flex-basis: 40%;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+}
+.right-box {
+  position: relative;
+  flex-basis: 60%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.logo {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+}
+.form-wrapper {
+  width: 90%;
+  color: #999;
+}
+.login-acnhor {
+  float: right;
+  font-size: 16px;
+  color: #ccc;
+}
+
+@media only screen and (max-width: 1024px) {
+  .flex-cont {
+    flex-direction: column;
+  }
+  .logo {
+    position: relative;
+  }
+}
+@media only screen and (max-width: 760px) {
+  .left-box {
+    display: none;
+  }
+}

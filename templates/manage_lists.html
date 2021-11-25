@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/manage_lists.css" />
+    <title>Rask - User manage Task Lists</title>
+  </head>
+  <body>
+    {% include "user_dashboard.html" %}
+    <h1 class="title">{{ current_user.name }}'s Saved Lists</h1>
+    <div class="new-list-cont">
+      <button class="new-list-btn" onclick="toggleForm()">
+        Create new list
+      </button>
+      <form
+        action="{{ url_for('new_list')}}"
+        method="post"
+        enctype="multipart/form-data"
+        class="hidden-form"
+        style="display: none"
+      >
+        <input
+          type="text"
+          name="listName"
+          class="list-name-input"
+          placeholder="Enter List Name.."
+          required
+        />
+        <input type="submit" value="Add New List" class="submit-new-list" />
+      </form>
+    </div>
+    <section class="lists-flex-cont">
+      {% if user_task_lists: %} {% for list in user_task_lists: %}
+      <div class="list-container flex-item">
+        <a
+          href="{{ url_for('task_lists', list_id=list.id )}}"
+          class="saved-list-link"
+          title="{{ list.name }}"
+          >{{ list.name }}</a
+        >
+        <a
+          class="del-btn"
+          title="Delete List"
+          href="{{ url_for('delete_task_list', list_id=list.id)}}"
+          >X</a
+        >
+      </div>
+      {% endfor %} {% else %}
+      <h1>You don't have any list, create a new one and start adding tasks!</h1>
+      {% endif %}
+    </section>
+  </body>
+  <script>
+    function toggleForm() {
+      let toggle_btn = document.getElementsByClassName("new-list-link")[0];
+      let form = document.getElementsByClassName("hidden-form")[0];
+      if (form.style.display != "none") {
+        form.style.display = "none";
+      } else {
+        form.style.display = "inline-block";
+      }
+    }
+  </script>
+</html>

@@ -1,0 +1,65 @@
+<style>
+  .dash-board {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 102;
+    width: 100%;
+    background: url("../static/images/wtfff.png"),
+      linear-gradient(to left, #333, #555);
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 40%), rgb(0 0 0 / 40%) 0 1px 3px,
+      inset 0 1px 0 rgb(255 255 255 / 20%);
+    padding: 6px 0;
+    box-sizing: border-box;
+  }
+  .dash-nav-bar {
+    display: flex;
+  }
+  .dash-nav-item-cont {
+    display: flex;
+    flex-basis: 99%;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .dash-board-nav-item {
+    margin: 0 15px;
+  }
+  .dash-board-nav-item > a {
+    text-decoration: none;
+    vertical-align: top;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #f7f7f7;
+    font-size: 14px;
+  }
+  .dash-board-nav-item > img {
+    vertical-align: middle;
+  }
+  .dash-board-nav-item > a:hover {
+    color: #ccc;
+  }
+</style>
+<div class="user-dahsboard-wrapper" style="height: 31px">
+  <div class="dash-board">
+    <nav class="dash-nav-bar">
+      <div class="dash-space"></div>
+      <div class="dash-nav-item-cont">
+        <span class="dash-board-nav-item">
+          <img src="../static/images/profile.png" alt="" />
+          <a href="#"> {{ current_user.name }}</a>
+        </span>
+        <span class="dash-board-nav-item">
+          <img src="../static/images/project-management.png" alt="" />
+          <a href="{{ url_for('manage_lists')}}">Manage Lists</a>
+        </span>
+        <span class="dash-board-nav-item">
+          <img src="../static/images/add-button.png" alt="" />
+          <a href="#">New List</a>
+        </span>
+        <span class="dash-board-nav-item">
+          <img src="../static/images/log-out.png" alt="" />
+          <a href="{{ url_for('logout')}}">Log Out</a>
+        </span>
+      </div>
+    </nav>
+  </div>
+</div>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/task_lists.css" />
+    <title>Rask - Task Manger page, create edit delete....</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      function setDueDate(date_data, task_id) {
+        $.ajax({
+          url: '{{ url_for("task_lists", list_id=list_id) }}',
+          method: "POST",
+          data: {
+            name: date_data,
+            task_id: task_id,
+          },
+        });
+      }
+      function deleteTask(task_id, task_index) {
+        $.ajax({
+          url: '{{ url_for("task_lists", list_id=list_id) }}',
+          method: "POST",
+          data: {
+            delete_task_id: task_id,
+          },
+        });
+        let deleted_container =
+          document.getElementsByClassName("task-container")[task_index - 1];
+        deleted_container.style.display = "none";
+      }
+      function setAlert(index, task_id) {
+        let alertBtnValue =
+          document.getElementsByClassName("alert-time-picker")[index - 1].value;
+        $.ajax({
+          url: '{{ url_for("set_alert")}}',
+          method: "POST",
+          data: {
+            alertDateTime: alertBtnValue,
+            taskId: task_id,
+          },
+        });
+      }
+      function sendListRequest(new_list_name) {
+        $.ajax({
+          url: "{{ url_for('update_list_name')}}",
+          method: "POST",
+          data: {
+            newName: new_list_name,
+            listId: "{{ list_id }}",
+          },
+        });
+      }
+    </script>
+  </head>
+  <body onload="checkEdits()">
+    {% if current_user.is_authenticated: %} {% include "user_dashboard.html" %}
+    {% endif %}
+    <div class="left-panel-wrapper">
+      <div class="left-panel">
+        <div class="logo-container">
+          <a href="{{ url_for('home')}}"
+            ><img src="../static/images/rask_logo-icon.png" alt="" class="logo"
+          /></a>
+        </div>
+        {% for list in user_lists: %} {% if list.id == list_id | int: %}
+        <a href="{{ url_for('task_lists', list_id=list.id)}}">
+          <div
+            class="user-lists-links"
+            style="background-color: rgba(255, 255, 255, 0.1)"
+          >
+            {{list.name}}
+          </div>
+        </a>
+        {% else %}
+        <a href="{{ url_for('task_lists', list_id=list.id)}}">
+          <!-- Need A list table -->
+          <div class="user-lists-links">{{list.name}}</div>
+        </a>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+    <section class="main-content">
+      <header>
+        <span class="list-name-wrapper">
+          <h1
+            contenteditable="true"
+            id="editable-list-name"
+            oninput="showInput()"
+            onkeypress="stopEdit(event)"
+            onmousedown="editContent()"
+            spellcheck="false"
+          >
+            {{ new_list_name }}
+          </h1>
+          <span class="floating-wrench">🔧</span>
+        </span>
+      </header>
+      <form
+        action="{{ url_for('add_task', list_id=list_id )}}"
+        method="post"
+        enctype="multipart/form-data"
+        name="newTaskForm"
+      >
+        <input
+          type="text"
+          name="userTask"
+          id="userTask"
+          placeholder="Enter Your task Here..."
+          spellcheck="false"
+          autocomplete="off"
+          autofocus
+          oninput="catchValue()"
+          onkeypress="saveValue(event)"
+          required
+        />
+      </form>
+      <div class="user-tasks">
+        {% for task in all_user_tasks: %}
+        <div class="task-container">
+          <span class="task-text" task_id="{{ task.id }}">{{ task.text }}</span>
+          <span class="time-container" id="date">
+            {% if task.due_date != "Add Due Date" and task.due_date: %}
+            <button
+              for="dueDate"
+              class="dueDate"
+              onclick="toggleDate('{{ loop.index }}')"
+            >
+              {{ task.due_date }}
+            </button>
+            <input
+              type="date"
+              class="datePicker"
+              style="display: none"
+              min="{{ task.creation_date.split(' ')[0] }}"
+              value="{{task.due_date}}"
+              onchange="catchDate('{{ loop.index }}')"
+            />
+            {% else %}
+            <button
+              for="dueDate"
+              class="dueDate"
+              onclick="toggleDate('{{ loop.index }}')"
+            >
+              Add Due Date
+            </button>
+            <input
+              type="date"
+              class="datePicker"
+              style="display: none"
+              min="{{ task.creation_date.split(' ')[0] }}"
+              onchange="catchDate('{{ loop.index }}')"
+            />
+            {% endif %}
+          </span>
+          <span class="tool-container">
+            {% if current_user.is_authenticated: %}
+            <button class="set-alert">
+              🔔<input
+                type="datetime-local"
+                class="alert-time-picker"
+                onchange="setAlert('{{ loop.index }}', '{{ task.id }}')"
+                value="{{ task.alert_date}}T{{ task.alert_time }}"
+              />
+            </button>
+            {% else %}
+            <button class="set-alert">
+              <a
+                href="{{ url_for('signup')}}"
+                style="text-decoration: none; font-size: small"
+                >🔔</a
+              >
+            </button>
+            {% endif %}
+            <button
+              class="delete-task"
+              onclick="deleteTask('{{ task.id }}', '{{ loop.index }}')"
+            >
+              X
+            </button>
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </body>
+  <script>
+    function getDateTime() {
+      let today = new Date();
+      let date =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
+      let time = today.getHours() + ":" + today.getMinutes();
+      let min_date_time =
+        document.getElementsByClassName("alert-time-picker")[0].min;
+      console.log(min_date_time);
+      return date + "T" + time;
+    }
+    function catchDate(index) {
+      let my_date_time =
+        document.getElementsByClassName("datePicker")[index - 1];
+      let task_id = document
+        .getElementsByClassName("task-text")
+        [index - 1].getAttribute("task_id");
+      let my_due_date = document.getElementsByClassName("dueDate")[index - 1];
+      // console.log(typeof my_due_date.value);
+      if (my_date_time.value.trim() != "") {
+        my_due_date.innerText = my_date_time.value.split("T")[0];
+      } else {
+        my_due_date.innerText = "Add Due Date";
+      }
+      my_date_time.style.display = "none";
+      setDueDate(my_date_time.value.split("T")[0], task_id);
+    }
+    function toggleDate(index) {
+      let datePickerList = document.getElementsByClassName("datePicker");
+      for (var i = 0; i < datePickerList.length; i++) {
+        if (i != index - 1) {
+          datePickerList[i].style.display = "none";
+        }
+      }
+      let my_date_time =
+        document.getElementsByClassName("datePicker")[index - 1];
+      let my_due_date = document.getElementsByClassName("dueDate")[index - 1];
+      if (my_date_time.style.display == "none") {
+        my_date_time.style.display = "inline-block";
+        my_date_time.focus();
+      } else {
+        my_date_time.style.display = "none";
+      }
+    }
+    let my_input = document.getElementById("userTask");
+    function catchValue() {
+      localStorage.newTask = my_input.value;
+    }
+    function saveValue(e) {
+      let keynum;
+
+      if (window.event) {
+        keynum = e.keyCode;
+      } else if (e.which) {
+        keynum = e.which;
+      }
+      if (keynum == 13) {
+        my_input.blur();
+      }
+    }
+    let listNameHeader = document.getElementById("editable-list-name");
+    function showInput() {
+      let newName = listNameHeader.innerText;
+      localStorage.userEdits = newName;
+    }
+    function editContent() {
+      listNameHeader.setAttribute("contenteditable", "true");
+    }
+    function stopEdit(e) {
+      let keynum;
+
+      if (window.event) {
+        keynum = e.keyCode;
+      } else if (e.which) {
+        keynum = e.which;
+      }
+      if (keynum == 13) {
+        if (listNameHeader.innerText.trim() == "") {
+          listNameHeader.innerText = "--";
+        }
+        listNameHeader.setAttribute("contenteditable", "false");
+      }
+      sendListRequest(listNameHeader.innerText);
+    }
+    function checkEdits() {
+      if ("{{ new_list_name }}".trim() == "") {
+        if (localStorage.userEdits != null) {
+          if (localStorage.userEdits.trim() == "") {
+            localStorage.userEdits = "--";
+          }
+          document.getElementById("editable-list-name").innerText =
+            localStorage.userEdits;
+        }
+      } else {
+        localStorage.userEdits =
+          document.getElementById("editable-list-name").innerText;
+      }
+    }
+  </script>
+</html>
